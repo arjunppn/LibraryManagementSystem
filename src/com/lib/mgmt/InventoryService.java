@@ -1,6 +1,5 @@
 package com.lib.mgmt;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class InventoryService {
 
@@ -33,9 +31,14 @@ public class InventoryService {
 		if(null==b) {
 			System.out.println("No book with id "+bookId);return;
 		}
-		p.getBooks().add(b);
-		b.giveBook(p);
-		System.out.println(b.getTitle()+" Book lended to "+p.getName());
+		if(b.getAvailable()>0) {
+			p.getBooks().add(b);
+			b.giveBook(p);
+			System.out.println(b.getTitle()+" Book lended to "+p.getName());
+		}
+		else{
+			System.out.println("Book not available!");
+		}
 	}
 	public static void assignBook(String title, String name) {
 
@@ -77,7 +80,7 @@ public class InventoryService {
 		}
 		p.getBooks().remove(b);
 		b.takeBook(p);
-		System.out.println(b.getTitle()+" Book lended to "+p.getName());
+		System.out.println(b.getTitle()+" Book retrieved from "+p.getName());
 
 	}
 	public static void removePatron(String name) {
@@ -126,25 +129,25 @@ public class InventoryService {
 		List<String> lines=Files.readAllLines(path);
 		lines.stream().forEach(
 				s->{
-			try {
-				String[] a=s.split(":");
-				addBook(a[0], a[1], Long.parseLong(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[4]));
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
-				System.out.println("error in parsing line :"+s);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				System.out.println("error in parsing line :"+s);
-			}
-			});
+					try {
+						String[] a=s.split(":");
+						addBook(a[0], a[1], Long.parseLong(a[2]), Integer.parseInt(a[3]), Integer.parseInt(a[4]));
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+						System.out.println("error in parsing line :"+s);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+						System.out.println("error in parsing line :"+s);
+					}
+				});
 		System.out.println("Books parsed");
 		lines=Files.readAllLines(Paths.get("resources/patrons.txt"));
 		try {
 			lines.stream().forEach(s->{
 				String[] a=s.split(":");
 				addPatron(a[0],a[1],a[2]);
-				});
+			});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

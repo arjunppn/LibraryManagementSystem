@@ -33,7 +33,7 @@ public class Book {
 	}
 	public void takeBook(Patron p) {
 		borrowers.remove(p);
-		available--;
+		available++;
 	}
 	public void printBorrowers() {
 		System.out.println(title+" :");
